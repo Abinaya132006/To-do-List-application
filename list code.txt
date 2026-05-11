@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colored Modern To-Do List</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:"Inter", sans-serif;
+    }
+
+    body{
+        height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:linear-gradient(135deg, #f5d7ff, #d4e5ff, #ffe4d4);
+        background-size:300% 300%;
+        animation:bgMove 10s ease infinite;
+        padding:20px;
+    }
+
+    @keyframes bgMove {
+        0% {background-position:0% 50%;}
+        50% {background-position:100% 50%;}
+        100% {background-position:0% 50%;}
+    }
+
+    .container{
+        width:380px;
+        background:white;
+        padding:30px 25px;
+        border-radius:22px;
+        box-shadow:
+            0 10px 35px rgba(0,0,0,0.15),
+            0 4px 14px rgba(0,0,0,0.06);
+        animation:fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn{
+        from{opacity:0; transform:translateY(10px);}
+        to{opacity:1; transform:translateY(0);}
+    }
+
+    h2{
+        text-align:center;
+        margin-bottom:25px;
+        font-size:26px;
+        color:#2b2b2b;
+        font-weight:700;
+    }
+
+    .input-group{
+        position:relative;
+        margin-bottom:20px;
+    }
+
+    .input-group input{
+        width:100%;
+        padding:14px;
+        border-radius:14px;
+        border:2px solid #ececec;
+        outline:none;
+        font-size:15px;
+        background:#f9f9f9;
+        transition:0.2s;
+    }
+
+    .input-group input:focus{
+        border-color:#7b5cff;
+        box-shadow:0 0 6px rgba(123,92,255,0.3);
+        background:white;
+    }
+
+    .input-group label{
+        position:absolute;
+        left:15px;
+        top:50%;
+        transform:translateY(-50%);
+        color:#888;
+        pointer-events:none;
+        transition:0.25s;
+        background:white;
+        padding:0 6px;
+    }
+
+    .input-group input:focus + label,
+    .input-group input:not(:placeholder-shown) + label{
+        top:-2px;
+        font-size:12px;
+        color:#7b5cff;
+    }
+
+    button{
+        width:100%;
+        padding:13px;
+        border:none;
+        background:linear-gradient(135deg, #7b5cff, #a07bff);
+        color:white;
+        border-radius:14px;
+        font-weight:600;
+        cursor:pointer;
+        font-size:15px;
+        transition:0.3s;
+    }
+
+    button:hover{
+        transform:translateY(-2px);
+        background:linear-gradient(135deg, #6a4af8, #916aff);
+    }
+
+    ul{
+        list-style:none;
+        margin-top:25px;
+    }
+
+    /* Different soft colors for each task item */
+    .task-color-1{ background:#fff0f4; }
+    .task-color-2{ background:#f3f0ff; }
+    .task-color-3{ background:#e8faff; }
+    .task-color-4{ background:#fff7e6; }
+    .task-color-5{ background:#e7ffe8; }
+
+    li{
+        padding:15px;
+        margin-bottom:12px;
+        border-radius:16px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        box-shadow:
+            0 3px 6px rgba(0,0,0,0.06),
+            0 1px 3px rgba(0,0,0,0.05);
+        transition:0.3s;
+        animation:itemFade 0.4s ease;
+    }
+
+    @keyframes itemFade{
+        from{opacity:0; transform:translateY(8px);}
+        to{opacity:1; transform:translateY(0);}
+    }
+
+    li:hover{
+        transform:scale(1.02);
+    }
+
+    .task-box{
+        display:flex;
+        align-items:center;
+        gap:12px;
+        cursor:pointer;
+        color:#2c2c2c;
+    }
+
+    .task-box input[type="checkbox"]{
+        width:20px;
+        height:20px;
+        accent-color:#7b5cff;
+        cursor:pointer;
+        transform:scale(1.1);
+    }
+
+    li.completed{
+        opacity:0.55;
+        text-decoration:line-through;
+    }
+
+    .delete-btn{
+        background:transparent;
+        border:none;
+        font-size:18px;
+        color:#ff5a5a;
+        cursor:pointer;
+        padding:6px 8px;
+        border-radius:8px;
+        transition:0.2s;
+    }
+
+    .delete-btn:hover{
+        color:#e53939;
+        transform:scale(1.2);
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>To-Do List</h2>
+
+    <div class="input-group">
+        <input type="text" id="taskInput" placeholder=" ">
+        <label>Add a new task</label>
+    </div>
+
+    <button onclick="addTask()">Add Task</button>
+
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+let colorIndex = 1;
+
+function addTask() {
+    let input = document.getElementById("taskInput");
+    let text = input.value.trim();
+    if (!text) { alert("Enter a task"); return; }
+
+    let li = document.createElement("li");
+
+    // Assign soft colors in loop
+    li.classList.add("task-color-" + colorIndex);
+    colorIndex++;
+    if (colorIndex > 5) colorIndex = 1;
+
+    li.innerHTML = `
+        <div class="task-box" onclick="toggleTask(this)">
+            <input type="checkbox">
+            <span>${text}</span>
+        </div>
+        <button class="delete-btn" onclick="deleteTask(this)">✕</button>
+    `;
+
+    document.getElementById("taskList").appendChild(li);
+    input.value = "";
+}
+
+function toggleTask(box) {
+    let li = box.parentElement;
+    li.classList.toggle("completed");
+    let check = box.querySelector("input");
+    check.checked = !check.checked;
+}
+
+function deleteTask(btn) {
+    btn.parentElement.remove();
+}
+</script>
+
+</body>
+</html>
